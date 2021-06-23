@@ -2,7 +2,7 @@
 import { onMount } from 'svelte';
 import InfiniteLoading from 'svelte-infinite-loading';
 import { readData, updateData } from './data.js';
-import { fromUnixTime, formatDistance } from 'date-fns';
+import { formatDistance } from 'date-fns';
 import { toast } from '@zerodevx/svelte-toast';
 import { fly } from 'svelte/transition';
 import { flip } from 'svelte/animate';
@@ -28,7 +28,8 @@ function infiniteHandler({ detail : { loaded, complete }}) {
 }
 
 function timeAgo(unix) {
-	const time = formatDistance(fromUnixTime(unix), new Date(), { addSuffix : true })
+	console.log(unix);
+	const time = formatDistance(new Date(unix), new Date(), { addSuffix : true })
 	return time
 }
 
