@@ -26,7 +26,7 @@ const showPrivacy = () => open(Privacy);
 <h1> </h1>
 {:then url}
 <h1>
-<p in:fly="{{duration: 2000, y:y/2, opacity:0, easing:quadOut}}">
+<p in:fly="{{duration: 2000, y:y/3, opacity:0, easing:quadOut}}">
 <a href={url}>login with spotify</a>
 <br>
 <button on:click={showPrivacy}>privacy</button><button on:click={showAbout}>about</button>
