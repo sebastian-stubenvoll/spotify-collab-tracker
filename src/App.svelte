@@ -58,12 +58,6 @@ const validity = checkToken();
 		--toastProgressBackground: white;
 	}
 
-	main {
-		text-align: center;
-		padding: 0;
-		margin: 0 auto;
-		height: 100%;
-	}
 	@media (min-width: 640px) {
 		main {
 			max-width: none;

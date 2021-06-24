@@ -4,15 +4,22 @@ import { fly } from 'svelte/transition';
 import { quadOut } from 'svelte/easing';
 import { getContext } from 'svelte';
 import About from './About.svelte';
+import Privacy from './Privacy.svelte';
 
 const authURL = createAuthURL();
 let y;
 const { open } = getContext('simple-modal')
 
-const showAbout = () => open(About)
+const showAbout = () => open(About);
+const showPrivacy = () => open(Privacy);
 
 
 </script>
+
+<svelte:head>
+	<link rel="stylesheet" href="login.css">
+</svelte:head>
+
 <svelte:window bind:innerHeight={y}/>
 
 {#await authURL}
@@ -22,22 +29,21 @@ const showAbout = () => open(About)
 <p in:fly="{{duration: 2000, y:y/2, opacity:0, easing:quadOut}}">
 <a href={url}>login with spotify</a>
 <br>
-<button>privacy</button><button on:click={showAbout}>about</button>
+<button on:click={showPrivacy}>privacy</button><button on:click={showAbout}>about</button>
 </p>
 </h1>
 {/await}
-
 <style>
 	h1 {
-		color: indianred;
+		color: #f1f2f0;
 		font-size: 4em;
 		margin: 0;
 		position: relative;
-		top: 40%;
+		top: 10%;
 	}
 
 	a {
-		color: indianred;
+		color: #f1f2f0;
 	}
 	a:hover {
 		text-decoration: none;
@@ -46,7 +52,7 @@ const showAbout = () => open(About)
 	button {
 		font-size: 0.4em;
 		background: none;
-		color: indianred;
+		color: #f1f2f0;
 		padding: 0.6em;
 		border: none;
 		cursor: pointer;
