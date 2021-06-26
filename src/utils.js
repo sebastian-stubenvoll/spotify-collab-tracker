@@ -31,6 +31,5 @@ export async function challenge_from_verifier(v) {
 
 export function to_unix(ts) {
   const unix = Date.parse(ts)
-  console.log(ts, unix);
   return unix
 }

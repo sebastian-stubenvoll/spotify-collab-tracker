@@ -51,7 +51,7 @@ export async function getUserProfile() {
         return json
     } else {
         return undefined //use this to check if currently stored token is valid!
-}}
+    }}
 
 
 export async function getAccessToken(params) {
@@ -74,9 +74,9 @@ export async function getAccessToken(params) {
         postBody = postBody.join('&'); 
         const endpoint = 'https://accounts.spotify.com/api/token';
         const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: postBody
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: postBody
         });
         if (res.status != 200) {
             return false
@@ -102,17 +102,17 @@ const refreshAccessToken = async function () {
         'grant_type' : 'refresh_token',
         'refresh_token' : refresh,
         'client_id' : clientID
-        };
+    };
     for (let property in details) {
         const encodedKey = encodeURIComponent(property);
         const encodedValue = encodeURIComponent(details[property]);
         postBody.push(encodedKey + '=' + encodedValue);
-        }
+    }
     postBody = postBody.join('&');
     const res =  await fetch(endpoint, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    body: postBody
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: postBody
     });
     const json = await res.json();
     token = json.access_token;
@@ -140,7 +140,7 @@ export async function playlistRequests (auth, playlists_input) {
         const res = await fetch(endpoint, {
             method: 'GET',
             headers : authHeader(auth)
-            });
+        });
         const json = await res.json();
         for (let pl of json.items) {
             const pid = pl.id;
@@ -148,7 +148,7 @@ export async function playlistRequests (auth, playlists_input) {
             const pco = pl.collaborative;
             if (pco) {
                 if (!playlists.hasOwnProperty(pid)) {
-                   delta.update[pid] = psn; 
+                    delta.update[pid] = psn; 
                 } else {
                     if (playlists[pid] != psn) {
                         delta['update'][pid] = psn;
@@ -157,9 +157,9 @@ export async function playlistRequests (auth, playlists_input) {
                 }
             }
             if (json.next != null) {
-            endpoint = json.next;
+                endpoint = json.next;
             } else {
-            send = false;
+                send = false;
             }    
         }
     }
@@ -168,36 +168,30 @@ export async function playlistRequests (auth, playlists_input) {
 }
 
 export async function songRequests (auth, playlists_input) {
-    console.log('inside song requests');
     let endpoint = 'https://api.spotify.com/v1/playlists/'
     const playlists = playlists_input;    
     const params = {
         market: 'from_token',
         limit : '100',
         fields : 'name,id,external_urls,tracks.items(is_local,track(duration_ms,external_urls,name,popularity,id),added_at,added_by(id,external_urls,href),track.album(external_urls,name),track.artists(external_urls,name)),tracks(limit,next,offset)'
-        };
-const altparams = {
+    };
+    const altparams = {
         market: 'from_token',
         limit : '100',
         fields : 'items(is_local,track(duration_ms,external_urls,name,popularity,id),added_at,added_by(id,external_urls,href),track.album(external_urls,name),track.artists(external_urls,name)),limit,next,offset'
-        };
+    };
 
     let usernames = {};
     let results = [];
 
-    console.log(playlists); 
     for (let pl in playlists) {
-        console.log('looping playlists');
         let send = true;
         let url = new URL(endpoint + pl)
         let current_params = params;
         let container = undefined;
-        console.log(url);
+        url.search = new URLSearchParams(current_params).toString();
 
         while (send) {
-            console.log('sending to spotify');
-            url.search = new URLSearchParams(current_params).toString();
-            console.log(url);
             const res = await fetch(url, {
                 method: 'GET',
                 headers : authHeader(auth)
@@ -208,10 +202,8 @@ const altparams = {
                 container.tracks.next = json.next; 
                 json = container;
             }
-            console.log(json);
             for (let track of json.tracks.items) {
-                    console.log(track);
-//try {
+                try {
                     const unix = to_unix(track.added_at);
 
                     const subm_id = track.added_by.id;
@@ -230,25 +222,25 @@ const altparams = {
                     const pl_name = json.name;
                     const pl_link = json.external_urls.spotify;
                     const pl_id = json.id;
-                    
+
                     let artists = [];
                     for (let artist of track.track.artists) {
                         artists.push({name : artist.name, link : artist.external_urls.spotify});
                     } 
-                    
+
                     if (!usernames.hasOwnProperty(subm_id)) {
-                        usernames.subm_id = await getUsername(auth, subm_id);
+                        usernames[subm_id] = await getUsername(auth, subm_id);
                     }
-                    const subm_name = usernames.subm_id[0];
+                    const subm_name = usernames[subm_id][0];
                     let subm_images;
                     try {
-                        subm_images = usernames.subm_id[1][0];
+                        subm_images = usernames[subm_id][1][0];
                     } catch {
                         subm_images = null;
                     }
-                    
+
                     const identifier = `${unix} ${pl_id} ${tr_id}`;
-                    
+
                     const result = {
                         uid : identifier,
                         unix : unix,
@@ -269,15 +261,13 @@ const altparams = {
                         playlist_link : pl_link,
                         playlist_id : pl_id
                     };
-                    console.log('loggin result', result);
-                    
+
                     results.push(result);
-//               } catch {
+                } catch {
                     //pass
-//               }
-                
+                }
+
             }   
-            
             if (json.tracks.next != null) {
                 url = new URL(json.tracks.next);
                 container = json;
@@ -287,7 +277,6 @@ const altparams = {
             }
         }
     }
-    console.log(results);
     return { songs : results }
 }
 
@@ -297,8 +286,8 @@ async function getUsername (auth, subm_id) {
     const res = await fetch(url, {
         method: 'GET',
         headers: authHeader(auth)
-        });
+    });
     const json = await res.json();
     const output = [json.display_name, json.images];
     return output
-    }
+}

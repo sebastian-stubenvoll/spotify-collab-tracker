@@ -28,7 +28,6 @@ function infiniteHandler({ detail : { loaded, complete }}) {
 }
 
 function timeAgo(unix) {
-	console.log(unix);
 	const time = formatDistance(new Date(unix), new Date(), { addSuffix : true })
 	return time
 }
@@ -50,21 +49,27 @@ onMount(() => {
 				}).
 				then(toast.push('Yo, someone did something!'))
 			}
-			list = list; //required to re-render list (aka update relative timestamps)
 			});
 		}, 120000)
+	setInterval(() => {
+		list = list; //required to re-render list (aka update relative timestamps)
+	}, 10000)
 });
 	
 
 </script>
 <main>
 {#await updateData()}
-<p>loading...</p>
+<p>fetching your collaborative playlists from spotify.
+<br>
+<br>
+if this is your first time launching this page, this might take a while.
+</p>
 {:then}
 	{#each list as s (s.uid)}
-	<div animate:flip="{{duration:3000, easing: quintOut}}">
-		<div in:fly="{{duration:3000,x:-500,opacity:0,easing: quintOut}}"
-			out:fly="{{duration:2000,x:500,opacity:0,easing: quintOut}}">
+	<div animate:flip="{{duration:2000, easing: quintOut}}">
+		<div in:fly="{{duration:3000,x:-300,opacity:0,easing: quintOut}}"
+			out:fly="{{duration:2000,x:300,opacity:0,easing: quintOut}}">
 		<h1><a href={s.song_link} target='_blank'>{s.song_title}</a></h1>
 		<h2>by 
 			{#each s.artists as {name, link}, i}

@@ -14,7 +14,13 @@ export const updateData = async function () {
 export const readData = async function(limit) {
 	const result = await getSongs(limit);
 	return result
-	};
+};
+
+
+export const deleteData = function () {
+	indexedDB.deleteDatabase('sctdb');
+}
+
 
 let schemaBuilder;
 let userData;
@@ -23,8 +29,8 @@ let songsTable;
 
 async function createDatabase() {
 	schemaBuilder = lf.schema.create('sctdb',1); 
-	}
-	
+}
+
 async function initDatabase() {
 	schemaBuilder.createTable('playlists').
 		addColumn('id', lf.Type.STRING).
@@ -50,7 +56,7 @@ async function initDatabase() {
 		addColumn('playlist_link', lf.Type.STRING).
 		addColumn('playlist_id', lf.Type.STRING).
 		addPrimaryKey(['uid']);
-	}
+}
 
 //assign variables for use with various functions
 async function initVars() {
@@ -58,78 +64,77 @@ async function initVars() {
 	userData = db;
 	playlistsTable = userData.getSchema().table('playlists');
 	songsTable = userData.getSchema().table('songs');
-	};
-	
+};
+
 //updateFunctions
 const updatePlaylists = async function () {
-		//connect to database and grab all playlists
-		const playlistsData = await userData.select().from(playlistsTable).exec();
-		let playlists = {};
-		playlistsData.forEach(obj => {
-			playlists[obj.id] = obj.snapshot;
-			});
-		//send request to api with current playlist dict
-		const json = await playlistRequests(token, playlists);
+	//connect to database and grab all playlists
+	const playlistsData = await userData.select().from(playlistsTable).exec();
+	let playlists = {};
+	playlistsData.forEach(obj => {
+		playlists[obj.id] = obj.snapshot;
+	});
+	//send request to api with current playlist dict
+	const json = await playlistRequests(token, playlists);
 
-		//update playlist table with new information
-		Object.keys(json['remove']).forEach((key) => {
-			//remove playlists from playlist table
-			userData.
+	//update playlist table with new information
+	Object.keys(json['remove']).forEach((key) => {
+		//remove playlists from playlist table
+		userData.
 			delete().
 			from(playlistsTable).
 			where(playlistsTable.id.eq(key)).
 			exec();
 
-			//remove songs of those playlists from songs table
-			userData.
+		//remove songs of those playlists from songs table
+		userData.
 			delete().
 			from(songsTable).
 			where(songsTable.playlist_id.eq(key)).
 			exec();
-		});
+	});
 
-		Object.entries(json['update']).forEach((entry) => {
-			//add and update new and existing playlists respectively
-			const [key, value] = entry;
-			const row = playlistsTable.createRow({
-				'id' : key,
-				'snapshot' : value
-				});
-			userData.
+	Object.entries(json['update']).forEach((entry) => {
+		//add and update new and existing playlists respectively
+		const [key, value] = entry;
+		const row = playlistsTable.createRow({
+			'id' : key,
+			'snapshot' : value
+		});
+		userData.
 			insertOrReplace().
 			into(playlistsTable).
 			values([row]).
 			exec();
-			userData.
+		userData.
 			delete().
 			from(songsTable).
 			where(songsTable.playlist_id.eq(key)).
 			exec();
-			});
-		//return playlists object from API call for further usage
-		return json
-	};
+	});
+	//return playlists object from API call for further usage
+	return json
+};
 
 const updateSongs = async function (playlists) {
-		//use playlists object from updatePlaylists to fetch 
-		const json = await songRequests(token, playlists.update);
-		console.log('inside data', json)
-		//update songs table; API response is designed in a manner
-		//such that the songs key holds an array of songs,
-		//all of which are objects that match the table row schema
-		json['songs'].forEach(song => {
-			const row = songsTable.createRow(song);
-			userData.
+	//use playlists object from updatePlaylists to fetch 
+	const json = await songRequests(token, playlists.update);
+	//update songs table; API response is designed in a manner
+	//such that the songs key holds an array of songs,
+	//all of which are objects that match the table row schema
+	json['songs'].forEach(song => {
+		const row = songsTable.createRow(song);
+		userData.
 			insertOrReplace().
 			into(songsTable).	
 			values([row]).
 			exec();
-			});
-			
+	});
 
-		//for temporary testing!
-		return json
-	};
+
+	//for temporary testing!
+	return json
+};
 
 
 const getSongs = async function (limit) {
@@ -139,9 +144,8 @@ const getSongs = async function (limit) {
 		limit(limit).
 		exec();
 	return result
-	
-	}
-	
+
+}
 
 
 
