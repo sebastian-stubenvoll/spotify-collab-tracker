@@ -5,7 +5,7 @@ import { generateRandomString, challenge_from_verifier, to_unix } from './utils'
 //******************************
 
 const clientID = '0a004f36100a460ca97d2d99f485af2f';
-const redirect_uri = 'http://localhost:5000';
+const redirect_uri = 'https://sebastian-stubenvoll.github.io/spotify-collab-tracker/';
 
 export let token;
 let refresh;
