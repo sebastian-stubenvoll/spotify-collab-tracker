@@ -8,9 +8,8 @@
 	};
 
 </script>
-
 <h1>
-how does this website access my data?
+how is my data accessed?
 <p>
 once you've logged in via spotify and granted the required permissions all the requests are sent from <b>your browser directly to spotify</b>. this means none of your private spotify data is ever accessed by the server hosting this website.
 </p>

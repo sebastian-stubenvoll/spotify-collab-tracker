@@ -5,13 +5,14 @@
 	import { getContext } from 'svelte';
 	import About from '../modals/About.svelte';
 	import Privacy from '../modals/Privacy.svelte';
+	import CloseButton from '../modals/CloseButton.svelte';
 
 	const authURL = createAuthURL();
 	let y;
 	const { open } = getContext('simple-modal')
 
-	const showAbout = () => open(About);
-	const showPrivacy = () => open(Privacy);
+	const showAbout = () => open(About, {}, {closeButton: CloseButton});
+	const showPrivacy = () => open(Privacy, {}, {closeButton: CloseButton});
 
 
 </script>
