@@ -1,11 +1,9 @@
-import { generateRandomString, challenge_from_verifier, to_unix } from './utils';
+import { generateRandomString, challenge_from_verifier, to_unix } from './utils.js';
+import { clientID, redirect_uri } from '../../settings.js';
 
 //******************************
 //*******AUTHENTIFICATION*******
 //******************************
-
-const clientID = '0a004f36100a460ca97d2d99f485af2f';
-const redirect_uri = 'https://sebastian-stubenvoll.github.io/spotify-collab-tracker/';
 
 export let token;
 let refresh;

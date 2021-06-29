@@ -1,5 +1,5 @@
 <script>
-	import { deleteData } from './data.js'
+	import { deleteData } from '../utils/data.js'
 	import { toast } from '@zerodevx/svelte-toast';
 
 	const clearData = () => {

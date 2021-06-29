@@ -1,5 +1,5 @@
 import lovefield from "lovefield";
-import { songRequests, playlistRequests } from "./spotify_utils";
+import { songRequests, playlistRequests } from "./spotify_utils.js";
 import { token } from "./spotify_utils";
 
 export const updateData = async function () {
