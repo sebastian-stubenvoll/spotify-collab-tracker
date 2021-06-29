@@ -1,75 +1,87 @@
-import lovefield from "lovefield";
 import { songRequests, playlistRequests } from "./spotify_utils.js";
 import { token } from "./spotify_utils";
+import { Connection } from "jsstore";
+import workerInjector from "jsstore/dist/worker_injector";
 
-export const updateData = async function () {
-	await createDatabase();
+//exports
+export async function updateData () {
+	await createConnection();
 	await initDatabase();
-	await initVars();
 	const playlists = await updatePlaylists();
 	const allSongs = await updateSongs(playlists);
 	return allSongs['songs'].length != 0
 };
 
-export const readData = async function(limit) {
+export async function readData (limit) {
 	const result = await getSongs(limit);
 	return result
 };
 
 
-export const deleteData = function () {
+export function deleteData () {
 	indexedDB.deleteDatabase('sctdb');
 }
-
-
-let schemaBuilder;
-let userData;
+//global vars
+let connection;
 let playlistsTable;
 let songsTable;
+let db;
 
-async function createDatabase() {
-	schemaBuilder = lf.schema.create('sctdb',1); 
+
+//internal functions
+async function createConnection() {
+	connection = new Connection();
+	connection.addPlugin(workerInjector);
 }
 
 async function initDatabase() {
-	schemaBuilder.createTable('playlists').
-		addColumn('id', lf.Type.STRING).
-		addColumn('snapshot', lf.Type.STRING).
-		addPrimaryKey(['id']);
-	schemaBuilder.createTable('songs').
-		addColumn('uid', lf.Type.STRING).
-		addColumn('unix', lf.Type.INTEGER).
-		addColumn('subm_name', lf.Type.STRING).
-		addColumn('subm_id', lf.Type.STRING).
-		addColumn('subm_link', lf.Type.STRING).
-		addColumn('subm_images', lf.Type.OBJECT).
-		addColumn('song_title', lf.Type.STRING).
-		addColumn('song_link', lf.Type.STRING).
-		addColumn('song_popularity', lf.Type.INTEGER).
-		addColumn('song_duration', lf.Type.STRING).
-		addColumn('song_islocal', lf.Type.BOOLEAN).
-		addColumn('song_id', lf.Type.STRING).
-		addColumn('album_name', lf.Type.STRING).
-		addColumn('album_link', lf.Type.STRING).
-		addColumn('artists', lf.Type.OBJECT).
-		addColumn('playlist_name', lf.Type.STRING).
-		addColumn('playlist_link', lf.Type.STRING).
-		addColumn('playlist_id', lf.Type.STRING).
-		addPrimaryKey(['uid']);
+	playlistsTable = {
+		name: 'playlists',
+		columns: {
+			id : { primaryKey: true, notNull: true, dataType: 'string' },
+			snapshot : { notNull: true, dataType: 'string' }
+		}
+	};
+	
+	songsTable = {
+		name: 'songs',
+		columns: {
+			uid : { primaryKey: true, dataType: 'string' },
+			unix : { dataType: 'number' },
+			subm_name : { dataType: 'string' },
+			subm_id : { dataType: 'string' },
+			subm_link : { dataType: 'string' },
+			subm_images : { dataType: 'object' },
+			song_title : { dataType: 'string' },
+			song_link : { dataType: 'string' },
+			song_popularity : { dataType: 'number' },
+			song_duration : { dataType: 'number' },
+			song_islocal : { dataType: 'boolean' },
+			song_id : { dataType: 'string' },
+			album_name : { dataType: 'string' },
+			album_link : { dataType: 'string' },
+			artists : { dataType: 'array' },
+			playlist_name : { dataType: 'string' },
+			playlist_link : { dataType: 'string' },
+			playlist_id : { dataType: 'string' }
+		}
+	};
+
+	db = {
+		name : 'sctdb',
+		tables : [ playlistsTable, songsTable ]
+	};
+
+	await connection.initDb(db);
 }
 
-//assign variables for use with various functions
-async function initVars() {
-	const db = await schemaBuilder.connect();
-	userData = db;
-	playlistsTable = userData.getSchema().table('playlists');
-	songsTable = userData.getSchema().table('songs');
-};
-
 //updateFunctions
-const updatePlaylists = async function () {
+async function updatePlaylists () {
 	//connect to database and grab all playlists
-	const playlistsData = await userData.select().from(playlistsTable).exec();
+	//SQL: SELECT * FROM playlists
+	const playlistsData = await connection.select({
+		from: 'playlists'
+	});
 	let playlists = {};
 	playlistsData.forEach(obj => {
 		playlists[obj.id] = obj.snapshot;
@@ -80,71 +92,73 @@ const updatePlaylists = async function () {
 	//update playlist table with new information
 	Object.keys(json['remove']).forEach((key) => {
 		//remove playlists from playlist table
-		userData.
-			delete().
-			from(playlistsTable).
-			where(playlistsTable.id.eq(key)).
-			exec();
-
+		//SQL: DELETE FROM playlists WHERE id=key
+		connection.remove({
+			from : 'playlists',
+			where : {
+				id : key
+			}
+		});
 		//remove songs of those playlists from songs table
-		userData.
-			delete().
-			from(songsTable).
-			where(songsTable.playlist_id.eq(key)).
-			exec();
+		//SQL: DELETE FROM songs WHERE playlist_id=key
+		connection.remove({
+			from : 'songs',
+			where : {
+				playlist_id : key
+			}
+		});
 	});
 
 	Object.entries(json['update']).forEach((entry) => {
 		//add and update new and existing playlists respectively
 		const [key, value] = entry;
-		const row = playlistsTable.createRow({
+		const row = {
 			'id' : key,
 			'snapshot' : value
+		};
+		//SQL: INSERT INTO playlists (id, snapshot) VALUES (key, value)
+		connection.insert({
+			into : 'playlists',
+			values : [ row ]
 		});
-		userData.
-			insertOrReplace().
-			into(playlistsTable).
-			values([row]).
-			exec();
-		userData.
-			delete().
-			from(songsTable).
-			where(songsTable.playlist_id.eq(key)).
-			exec();
+		//SQL: DELETE FROM songs WHERE playlist_id=key
+		connection.remove({
+			from : 'songs',
+			where : {
+				playlist_id : key
+			}
+		});
 	});
 	//return playlists object from API call for further usage
 	return json
 };
 
-const updateSongs = async function (playlists) {
+async function updateSongs (playlists) {
 	//use playlists object from updatePlaylists to fetch 
 	const json = await songRequests(token, playlists.update);
 	//update songs table; API response is designed in a manner
 	//such that the songs key holds an array of songs,
 	//all of which are objects that match the table row schema
-	json['songs'].forEach(song => {
-		const row = songsTable.createRow(song);
-		userData.
-			insertOrReplace().
-			into(songsTable).	
-			values([row]).
-			exec();
-	});
-
-
+	await connection.insert({
+		into : 'songs',
+		values: json.songs
+		});
 	//for temporary testing!
 	return json
 };
 
 
-const getSongs = async function (limit) {
-	const result = await userData.select().
-		from(songsTable).
-		orderBy(songsTable.unix, lf.Order.DESC).
-		limit(limit).
-		exec();
+async function getSongs (l) {
+	//SQL: SELECT * FROM songs ORDER BY unix DESC LIMIT l
+	const result = await connection.select({
+		from : 'songs',
+		order : {
+			by : 'unix',
+			type: 'desc'
+		},
+		limit : l
+	});
 	return result
-
 }
 
 
