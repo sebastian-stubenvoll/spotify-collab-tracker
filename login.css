@@ -1,0 +1,25 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	background-color: indianred;
+	position: absolute;
+}
+
+main {
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	height: auto;
+	top: 50%;
+	left: 50%;
+	position: relative;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+
