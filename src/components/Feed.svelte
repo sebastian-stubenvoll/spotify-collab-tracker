@@ -12,6 +12,9 @@
 	let list = [];
 	let lastTouchedByUpdate = false;
 
+	//remove auth url params
+	history.pushState({}, 'feed', '/');
+
 
 	function infiniteHandler({ detail : { loaded, complete }}) {
 		readData(limit).
