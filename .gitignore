@@ -1,6 +1,5 @@
 /node_modules/
 #/public/build/
-gh-pages.js
 settings.js 
 
 .DS_Store
