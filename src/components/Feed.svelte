@@ -13,7 +13,7 @@
 	let lastTouchedByUpdate = false;
 
 	//remove auth url params
-	history.pushState({}, 'feed', '/');
+	history.pushState({}, 'feed', '/spotify-collab-tracker');
 
 
 	function infiniteHandler({ detail : { loaded, complete }}) {
