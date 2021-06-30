@@ -39,7 +39,7 @@ async function initDatabase() {
 		name: 'playlists',
 		columns: {
 			id : { primaryKey: true, notNull: true, dataType: 'string' },
-			snapshot : { notNull: true, dataType: 'string' }
+			snapshot : { dataType: 'string' }
 		}
 	};
 	
@@ -143,7 +143,6 @@ async function updateSongs (playlists) {
 		into : 'songs',
 		values: json.songs
 		});
-	//for temporary testing!
 	return json
 };
 
