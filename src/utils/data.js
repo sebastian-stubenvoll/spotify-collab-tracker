@@ -39,20 +39,20 @@ async function initDatabase() {
 		name: 'playlists',
 		columns: {
 			id : { primaryKey: true, notNull: true, dataType: 'string' },
-			snapshot : { dataType: 'string' }
+			snapshot : { notNull: true, dataType: 'string' }
 		}
 	};
 	
 	songsTable = {
 		name: 'songs',
 		columns: {
-			uid : { primaryKey: true, dataType: 'string' },
-			unix : { dataType: 'number' },
-			subm_name : { dataType: 'string' },
-			subm_id : { dataType: 'string' },
+			uid : { primaryKey: true, notNull: true, dataType: 'string' },
+			unix : { notNull: true, dataType: 'number' },
+			subm_name : { notNull: true, dataType: 'string' },
+			subm_id : { notNull: true, dataType: 'string' },
 			subm_link : { dataType: 'string' },
 			subm_images : { dataType: 'object' },
-			song_title : { dataType: 'string' },
+			song_title : { notNull: true, dataType: 'string' },
 			song_link : { dataType: 'string' },
 			song_popularity : { dataType: 'number' },
 			song_duration : { dataType: 'number' },
@@ -60,10 +60,10 @@ async function initDatabase() {
 			song_id : { dataType: 'string' },
 			album_name : { dataType: 'string' },
 			album_link : { dataType: 'string' },
-			artists : { dataType: 'array' },
-			playlist_name : { dataType: 'string' },
-			playlist_link : { dataType: 'string' },
-			playlist_id : { dataType: 'string' }
+			artists : { notNull: true, dataType: 'array' },
+			playlist_name : { notNull: true, dataType: 'string' },
+			playlist_link : { notNull: true, dataType: 'string' },
+			playlist_id : { notNull: true, dataType: 'string' }
 		}
 	};
 
@@ -119,7 +119,8 @@ async function updatePlaylists () {
 		//SQL: INSERT INTO playlists (id, snapshot) VALUES (key, value)
 		connection.insert({
 			into : 'playlists',
-			values : [ row ]
+			values : [ row ],
+			upsert : 'true'
 		});
 		//SQL: DELETE FROM songs WHERE playlist_id=key
 		connection.remove({
@@ -141,7 +142,8 @@ async function updateSongs (playlists) {
 	//all of which are objects that match the table row schema
 	await connection.insert({
 		into : 'songs',
-		values: json.songs
+		values: json.songs,
+		upsert : 'true' //theoretically not necessary but better safe than sorry!
 		});
 	return json
 };
