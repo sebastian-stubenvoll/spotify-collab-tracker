@@ -7,13 +7,14 @@
 	import { fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { quintOut } from 'svelte/easing';
+	import { pushURL } from '../../settings.js';
 
 	let limit = 20;
 	let list = [];
 	let lastTouchedByUpdate = false;
 
 	//remove auth url params
-	history.pushState({}, 'feed', '/spotify-collab-tracker');
+	history.pushState({}, 'feed', pushURL);
 
 
 	function infiniteHandler({ detail : { loaded, complete }}) {

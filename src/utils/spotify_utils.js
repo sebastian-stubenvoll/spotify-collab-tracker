@@ -30,26 +30,12 @@ export async function createAuthURL () {
     const s = generateRandomString();
     localStorage.setItem('state', s);
     const ps = 'state=' + s
-    const scope = 'scope=' + encodeURIComponent('user-read-private playlist-read-private playlist-read-collaborative');
+    const scope = 'scope=' + encodeURIComponent('playlist-read-private playlist-read-collaborative');
     const c = await createChallenge(createVerifier());
     const params = [cID, response_type, callback, c, code_challenge_method, ps, scope].join('&');
     const url = prefix + params
     return url;
 }
-
-
-export async function getUserProfile() {
-    const endpoint = 'https://api.spotify.com/v1/me';
-    const res = await fetch(endpoint, {
-        method: 'get',
-        headers: {'Content-Type':'application/json','Authorization':'Bearer '+token}}).
-        catch(error => console.log(error));
-    if (res.status == 200) {
-        const json = await res.json();
-        return json
-    } else {
-        return undefined //use this to check if currently stored token is valid!
-    }}
 
 
 export async function getAccessToken(params) {

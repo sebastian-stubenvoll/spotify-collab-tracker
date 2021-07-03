@@ -5,7 +5,7 @@
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import Modal from './components/Modal.svelte';
 
-	import { getUserProfile, getAccessToken } from './utils/spotify_utils.js';
+	import { getAccessToken } from './utils/spotify_utils.js';
 	import queryString from 'query-string';
 
 	const options = { duration: 10000 }
