@@ -25,9 +25,9 @@ Follow these steps, if you want to run this website yourself:
 
 Go to the [spotify developer portal](https://developer.spotify.com/), log in and
 create an application. Make sure you add a callback URI for the adress you want
-to host, by default  
+to host this page on, by default  
 
-    https://localhost:5000
+    http://localhost:5000
 
 Once you're finished clone this repository by running  
 
