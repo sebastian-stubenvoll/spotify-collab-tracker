@@ -15,7 +15,7 @@
 	</p>
 how is my data stored?
 <p>
-	all of your data is stored <b>locally</b> inside if your browser (indexedDB). this is only done to keep the number of requests as low as possible. you can delete the locally stored information at any point by via your browser or clicking <button on:click={clearData}><b>here</b></button>.
+	all of your data is stored <b>locally</b> inside your browser (indexedDB). this is only done to keep the number of requests as low as possible. you can delete the locally stored information at any point by via your browser or clicking <button on:click={clearData}><b>here</b></button>.
 </p>
 does this page store cookies?
 <p>no.</p>
