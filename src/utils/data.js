@@ -2,13 +2,18 @@ import { songRequests, playlistRequests } from "./spotify_utils.js";
 import { token } from "./spotify_utils";
 import { Connection } from "jsstore";
 import workerInjector from "jsstore/dist/worker_injector";
+import { get } from "svelte/store";
+import { filterCriteria, playlistFilters, userFilters } from "../stores.js";
 
-//exports
+//function exports
 export async function updateData () {
 	await createConnection();
 	await initDatabase();
 	const playlists = await updatePlaylists();
 	const allSongs = await updateSongs(playlists);
+	const fC = await getFilterCriteria();
+	filterCriteria.update_users(fC.users);
+	filterCriteria.update_playlists(fC.playlists);
 	return allSongs['songs'].length != 0
 };
 
@@ -21,6 +26,7 @@ export async function readData (limit) {
 export function deleteData () {
 	indexedDB.deleteDatabase('sctdb');
 }
+
 //global vars
 let connection;
 let playlistsTable;
@@ -150,17 +156,44 @@ async function updateSongs (playlists) {
 
 
 async function getSongs (l) {
-	//SQL: SELECT * FROM songs ORDER BY unix DESC LIMIT l
-	const result = await connection.select({
+	//base query
+	let query = {
 		from : 'songs',
 		order : {
 			by : 'unix',
 			type: 'desc'
 		},
-		limit : l
-	});
+		limit : l,
+		where : {}
+	}
+	//add filters
+	let temp = [];
+	get(playlistFilters).forEach(element => {temp.push(element.id)});
+	const playlist_re = new RegExp(temp.join('|'), 'i');
+	if (playlist_re != '') { query.where.playlist_id = { regex : playlist_re } }
+
+	temp = [];
+	get(userFilters).forEach(element => {temp.push(element.id)});
+	const user_re = new RegExp(temp.join('|'), 'i');
+	if (user_re != '') { query.where.subm_id = { regex : user_re } }
+
+	if ( query.where === {} ) { delete query.where };
+	//SQL: SELECT * FROM songs ORDER BY unix DESC LIMIT l
+	const result = await connection.select(query);
 	return result
 }
 
 
+async function getFilterCriteria () {
+	const users = await connection.select({
+		from : 'songs',
+		groupBy : 'subm_name'
+	});
 
+	const playlists = await connection.select({
+		from : 'songs',
+		groupBy : 'playlist_name'
+	});
+
+	return { users, playlists }
+}

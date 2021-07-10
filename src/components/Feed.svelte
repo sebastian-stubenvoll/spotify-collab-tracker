@@ -8,24 +8,26 @@
 	import { flip } from 'svelte/animate';
 	import { quintOut } from 'svelte/easing';
 	import { pushURL } from '../../settings.js';
+	import { limit, list, lastTouchedByUpdate } from '../stores.js';
+	import Filters from './Filters.svelte';
 
-	let limit = 20;
-	let list = [];
-	let lastTouchedByUpdate = false;
+	console.log('limit', $limit);
 
 	//remove auth url params
 	history.pushState({}, 'feed', pushURL);
 
-
 	function infiniteHandler({ detail : { loaded, complete }}) {
-		readData(limit).
+		readData($limit).
 			then(rows => {
-				if (rows.length == list.length && !lastTouchedByUpdate) {
+				if (rows.length == $list.length && $lastTouchedByUpdate == false) {
 					complete();
 				} else {
-					limit += 20;
-					list = rows;
-					lastTouchedByUpdate = false;
+					console.log('calling load feed');
+					console.log(rows);
+					limit.increment();
+					console.log($limit);
+					list.set(rows);
+					lastTouchedByUpdate.no();
 					loaded();
 				}
 			});
@@ -46,18 +48,18 @@
 			console.log('Fetching new data...');
 			updateData().then(result => {
 				if (result) {
-					readData(limit).
+					readData($limit).
 						then(rows => {
-							list = rows;
-							lastTouchedByUpdate = true;
+							list.set(rows);
+							lastTouchedByUpdate.yes();
 						}).
 						then(toast.push('Yo, someone did something!'))
 				}
 			});
 		}, 120000)
 		setInterval(() => {
-			list = list; //required to re-render list (aka update relative timestamps)
-		}, 10000)
+			list.refresh();
+		}, 60000)
 	});
 
 
@@ -72,10 +74,10 @@
 		if this is your first time launching this page, this might take a while.
 		</p>
 	{:then}
-		{#each list as s (s.uid)}
+		<Filters/>
+		{#each $list as s (s.uid)}
 			<div animate:flip="{{duration:2000, easing: quintOut}}">
-			<div in:fly="{{duration:3000,x:-300,opacity:0,easing: quintOut}}"
-				out:fly="{{duration:2000,x:300,opacity:0,easing: quintOut}}">
+			<div in:fly="{{duration:3000,x:-300,opacity:0,easing: quintOut}}">
 				<h1><a href={s.song_link} target='_blank'>{s.song_title}</a></h1>
 				<h2>by 
 					{#each s.artists as {name, link}, i}
@@ -90,7 +92,7 @@
 			</div>
 			</div>
 		{/each}
-		<InfiniteLoading on:infinite={infiniteHandler} />
+		<InfiniteLoading on:infinite={infiniteHandler} spinner='wavedots' />
 	{/await}
 </main>
 
