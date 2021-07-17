@@ -43,21 +43,16 @@ function createFilterCriteria() {
 
 	return {
 		subscribe,
-		update_playlists: (data) => update(criteria => {
-			const playlists = [];
-			data.forEach(entry => {
-				playlists.push({ id : entry.playlist_id, name : entry.playlist_name });
-			});
-			criteria.playlists = playlists;
-			return criteria
-		}),
-		update_users: (data) => update(criteria => {
+		update_criteria : (u, p) => update(criteria => {
 			const users = [];
-			data.forEach(entry => {
-				users.push({ id : entry.subm_id, name : entry.subm_name });
+			u.forEach(entry => {
+				users.push({ id : entry.subm_id, name : entry.subm_name, type : 0 });
 			});
-			criteria.users = users;
-			return criteria
+			const playlists = [];
+			p.forEach(entry => {
+				playlists.push({ id : entry.playlist_id, name : entry.playlist_name, type : 1 });
+			});
+			return [...users, ...playlists]
 		})
 	}
 }

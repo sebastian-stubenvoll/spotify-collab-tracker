@@ -18,7 +18,7 @@ how is my data stored?
 	all of your data is stored <b>locally</b> inside your browser (indexedDB). this is only done to keep the number of requests as low as possible. you can delete the locally stored information at any point by via your browser or clicking <button on:click={clearData}><b>here</b></button>.
 </p>
 does this page store cookies?
-<p>no.</p>
+<p>no. this webapp only store the data that is necessary for functionality. </p>
 i'm still not sure...
 <p>
 	if you have any remaining concerns, feel free to check out the <a href='https://github.com/sebastian-stubenvoll/spotify-collab-tracker' target='_blank'><b>source code</b></a>.

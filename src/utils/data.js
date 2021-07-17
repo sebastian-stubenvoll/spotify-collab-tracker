@@ -12,20 +12,28 @@ export async function updateData () {
 	const playlists = await updatePlaylists();
 	const allSongs = await updateSongs(playlists);
 	const fC = await getFilterCriteria();
-	filterCriteria.update_users(fC.users);
-	filterCriteria.update_playlists(fC.playlists);
+	filterCriteria.update_criteria(fC.users, fC.playlists);
+	updateFilterOptions(get(filterCriteria));
 	return allSongs['songs'].length != 0
-};
+}
 
 export async function readData (limit) {
 	const result = await getSongs(limit);
 	return result
-};
+}
 
 
 export function deleteData () {
 	indexedDB.deleteDatabase('sctdb');
 }
+
+export function updateFilterOptions (data) {
+		data = data.filter( el => !get(userFilters).includes( el ) );
+		data = data.filter( el => !get(playlistFilters).includes( el ) );
+		return data
+}
+
+
 
 //global vars
 let connection;
@@ -169,12 +177,12 @@ async function getSongs (l) {
 	//add filters
 	let temp = [];
 	get(playlistFilters).forEach(element => {temp.push(element.id)});
-	const playlist_re = new RegExp(temp.join('|'), 'i');
+	const playlist_re = new RegExp(temp.join('|'));
 	if (playlist_re != '') { query.where.playlist_id = { regex : playlist_re } }
 
 	temp = [];
 	get(userFilters).forEach(element => {temp.push(element.id)});
-	const user_re = new RegExp(temp.join('|'), 'i');
+	const user_re = new RegExp(temp.join('|'));
 	if (user_re != '') { query.where.subm_id = { regex : user_re } }
 
 	if ( query.where === {} ) { delete query.where };

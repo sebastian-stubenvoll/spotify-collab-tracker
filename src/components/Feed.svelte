@@ -92,7 +92,14 @@
 			</div>
 			</div>
 		{/each}
-		<InfiniteLoading on:infinite={infiniteHandler} spinner='wavedots' />
+		<InfiniteLoading on:infinite={infiniteHandler} spinner='wavedots'>
+			<span slot="noMore">
+				that's all folks!
+			</span>
+			<span slot="noResults">
+				that's all folks!
+			</span>
+		</InfiniteLoading>
 	{/await}
 </main>
 
@@ -116,5 +123,4 @@
 	a {
 		color: indianred;
 	}	
-
 </style>
