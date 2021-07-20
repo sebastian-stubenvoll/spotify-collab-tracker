@@ -38,6 +38,16 @@ function createLastTouchedByUpdate() {
 	}
 }
 
+function createFilterAction() {
+	const { subscribe, set } = writable(false);
+
+	return {
+		subscribe,
+		yes: () => set(true),
+		no: () => set(false)
+	}
+}
+
 function createFilterCriteria() {
 	const { subscribe, update } = writable({ playlists : {}, users : {} });
 
@@ -65,8 +75,7 @@ function createPlaylistFilters() {
 		add: (pl) => update(li => { 
 			if ( !li.includes(pl) ) { return [...li, pl] } else { return li }
 		}),
-		delete: (pl) => update(li => {
-			if ( li.includes(pl) ) { return arrayRemove(li, pl) } else { return li }
+		delete: (pl) => update(li => { if ( li.includes(pl) ) { return arrayRemove(li, pl) } else { return li }
 		}),
 		toggle: (pl) => update(li => {
 			if ( li.includes(pl) ) { return arrayRemove(li, pl) } else { return [...li, pl] }
@@ -96,6 +105,7 @@ function createUserFilters() {
 export const limit = createLimit();
 export const list = createList();
 export const lastTouchedByUpdate = createLastTouchedByUpdate();
+export const filterAction = createFilterAction();
 export const filterCriteria = createFilterCriteria();
 export const playlistFilters = createPlaylistFilters();
 export const userFilters = createUserFilters();

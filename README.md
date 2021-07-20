@@ -37,9 +37,13 @@ and create a file called settings.js in the root directory that looks like this
 
     export const clientID = YOURCLIENTID
     export const redirect_uri = YOURREDIRECTURI
+    export const pushURL = YOURURLPATH
 
 where you replace `YOURCLIENTID` with the client ID from your spotify developer dashboard
 and `YOURREDIRECTURI` with the redirect URI you added in your application settings.
+`YOURURLPATH` is the path that will be pushed to the browser window after logging in
+successfully. Change this so it matches the host address if you want the rollup auto
+refresh feature to work. If you're unsure just set it to `"/"`.
 
 Now run `npm i` to install all dependencies and finally run your application by executing
 

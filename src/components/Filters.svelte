@@ -1,6 +1,6 @@
 <script>
 	import { readData, updateFilterOptions } from "../utils/data.js";
-	import { filterCriteria, playlistFilters, userFilters, limit, list, lastTouchedByUpdate } from "../stores.js"; 
+	import { filterCriteria, playlistFilters, userFilters, limit, list, lastTouchedByUpdate, filterAction } from "../stores.js"; 
 	import Typeahead from "svelte-typeahead";
 
 	const extract = (item) => item.name;
@@ -10,6 +10,7 @@
 	function applyFilter() {
 		readData($limit).
 			then(rows => {
+				filterAction.yes();
 				list.set(rows);
 				lastTouchedByUpdate.yes();
 			})
@@ -21,7 +22,6 @@
 		} else if (item.type == 1) {
 			playlistFilters.add(item);
 		}
-		console.log('adding', item);
 		applyFilter();
 		updateFilterOptions($filterCriteria);
 	}
@@ -65,10 +65,10 @@
 
 <div class='filter-buttons'>
 {#each $userFilters as u}
-	<button on:click={() => {removeFilter(u)}}>{u.name}</button>
+	<button on:click={() => {removeFilter(u)}}> {u.name} </button>
 {/each}
 {#each $playlistFilters as p}
-	<button on:click={() => {removeFilter(p)}}>{p.name}</button>
+	<button on:click={() => {removeFilter(p)}}> {p.name} </button>
 {/each}
 </div>
 
@@ -77,7 +77,7 @@
 :global([data-svelte-search] input) {
   font-size: 1rem;
   text-align: center;
-  border:none;
+  border: 0px !important;
 }
 
 :global([data-svelte-typeahead]) {
@@ -94,7 +94,7 @@
 
 	.category-info {
 		font-style: italic;
-		color: #dddddd;
+		color: #807c7c;
 		}
 
 	button {

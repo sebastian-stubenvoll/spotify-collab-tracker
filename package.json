@@ -24,6 +24,7 @@
     "svelte-typewriter": "^2.4.5"
   },
   "dependencies": {
+    "@sveltejs/svelte-virtual-list": "^3.0.1",
     "@zerodevx/svelte-toast": "^0.3.0",
     "date-fns": "^2.21.3",
     "jsstore": "^4.2.6",

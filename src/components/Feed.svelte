@@ -4,14 +4,13 @@
 	import { readData, updateData } from '../utils/data.js';
 	import { formatDistance } from 'date-fns';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { fly } from 'svelte/transition';
+	import { fly, fade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { quintOut } from 'svelte/easing';
 	import { pushURL } from '../../settings.js';
-	import { limit, list, lastTouchedByUpdate } from '../stores.js';
+	import { limit, list, lastTouchedByUpdate, filterAction } from '../stores.js';
 	import Filters from './Filters.svelte';
 
-	console.log('limit', $limit);
 
 	//remove auth url params
 	history.pushState({}, 'feed', pushURL);
@@ -22,10 +21,7 @@
 				if (rows.length == $list.length && $lastTouchedByUpdate == false) {
 					complete();
 				} else {
-					console.log('calling load feed');
-					console.log(rows);
 					limit.increment();
-					console.log($limit);
 					list.set(rows);
 					lastTouchedByUpdate.no();
 					loaded();
@@ -50,10 +46,11 @@
 				if (result) {
 					readData($limit).
 						then(rows => {
+							filterAction.no();
 							list.set(rows);
 							lastTouchedByUpdate.yes();
 						}).
-						then(toast.push('Yo, someone did something!'))
+						then(toast.push(`something happened!`))
 				}
 			});
 		}, 120000)
@@ -62,34 +59,50 @@
 		}, 60000)
 	});
 
+	function custom_fly(node, {delay, duration, easing, x, y = 0, opacity}) {
+		if (!$filterAction) {delay = 0}
+		const target_opacity = 100;
+		const od = target_opacity * (1 - opacity);
+
+		return {
+			delay,
+			duration,
+			easing,
+			css: (t, u) => `
+			transform:translate(${(1 - t) * x}px, ${(1 - t) * y}px);
+			opacity: ${target_opacity - (od * u)}`
+		};
+	}
 
 </script>
 
 <main>
 
 	{#await updateData()}
-		<p>fetching your collaborative playlists from spotify.
-		<br>
-		<br>
-		if this is your first time launching this page, this might take a while.
-		</p>
+		<h3>fetching your collaborative playlists from spotify.
+			<br>
+			<br>
+			if this is your first time launching this page, this might take a while.
+		</h3>
 	{:then}
 		<Filters/>
 		{#each $list as s (s.uid)}
-			<div animate:flip="{{duration:2000, easing: quintOut}}">
-			<div in:fly="{{duration:3000,x:-300,opacity:0,easing: quintOut}}">
-				<h1><a href={s.song_link} target='_blank'>{s.song_title}</a></h1>
-				<h2>by 
-					{#each s.artists as {name, link}, i}
-						<a href={link} target='_blank'>{name}</a>{checkSeperator(s.artists, i)}
-					{/each}
-				</h2>
-				<h3>added to <a href={s.playlist_link} target='_blank'>{s.playlist_name}</a> 
-					by <a href={s.subm_link} target='_blank'><b>{s.subm_name}</b></a> {timeAgo(s.unix)}
-				</h3>
-				<br>
-				<br>
-			</div>
+			<div animate:flip="{{duration:2000, easing: quintOut, delay: 500}}">
+				<div in:custom_fly="{{duration:3000,x:-300,opacity:0,easing: quintOut, delay: 1000}}">
+					<div out:fly="{{duration:3000,x:300,opacity:0,easing: quintOut}}">
+						<h1><a href={s.song_link} target='_blank'>{s.song_title}</a></h1>
+						<h2>by 
+							{#each s.artists as {name, link}, i}
+							<a href={link} target='_blank'>{name}</a>{checkSeperator(s.artists, i)}
+							{/each}
+						</h2>
+						<h3>added to <a href={s.playlist_link} target='_blank'>{s.playlist_name}</a> 
+							by <a href={s.subm_link} target='_blank'><b>{s.subm_name}</b></a> {timeAgo(s.unix)}
+						</h3>
+						<br>
+						<br>
+					</div>
+				</div>
 			</div>
 		{/each}
 		<InfiniteLoading on:infinite={infiniteHandler} spinner='wavedots'>
