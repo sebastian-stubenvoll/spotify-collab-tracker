@@ -1,6 +1,6 @@
 <script>
 	import { readData, updateFilterOptions } from "../utils/data.js";
-	import { filterCriteria, playlistFilters, userFilters, limit, list, lastTouchedByUpdate, filterAction } from "../stores.js"; 
+	import { filterCriteria, playlistFilters, userFilters, limit, list, lastTouchedByUpdate, flyDelay } from "../stores.js"; 
 	import Typeahead from "svelte-typeahead";
 
 	const extract = (item) => item.name;
@@ -10,7 +10,7 @@
 	function applyFilter() {
 		readData($limit).
 			then(rows => {
-				filterAction.yes();
+				flyDelay.set(1000);
 				list.set(rows);
 				lastTouchedByUpdate.yes();
 			})

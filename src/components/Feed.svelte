@@ -4,11 +4,11 @@
 	import { readData, updateData } from '../utils/data.js';
 	import { formatDistance } from 'date-fns';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { fly, fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { quintOut } from 'svelte/easing';
 	import { pushURL } from '../../settings.js';
-	import { limit, list, lastTouchedByUpdate, filterAction } from '../stores.js';
+	import { limit, list, lastTouchedByUpdate, flyDelay } from '../stores.js';
 	import Filters from './Filters.svelte';
 
 
@@ -22,6 +22,7 @@
 					complete();
 				} else {
 					limit.increment();
+					flyDelay.set(0);
 					list.set(rows);
 					lastTouchedByUpdate.no();
 					loaded();
@@ -46,7 +47,7 @@
 				if (result) {
 					readData($limit).
 						then(rows => {
-							filterAction.no();
+							flyDelay.set(1000);
 							list.set(rows);
 							lastTouchedByUpdate.yes();
 						}).
@@ -58,37 +59,21 @@
 			list.refresh();
 		}, 60000)
 	});
-
-	function custom_fly(node, {delay, duration, easing, x, y = 0, opacity}) {
-		if (!$filterAction) {delay = 0}
-		const target_opacity = 100;
-		const od = target_opacity * (1 - opacity);
-
-		return {
-			delay,
-			duration,
-			easing,
-			css: (t, u) => `
-			transform:translate(${(1 - t) * x}px, ${(1 - t) * y}px);
-			opacity: ${target_opacity - (od * u)}`
-		};
-	}
-
 </script>
 
 <main>
 
 	{#await updateData()}
-		<h3>fetching your collaborative playlists from spotify.
+		<p>fetching your collaborative playlists from spotify.
 			<br>
 			<br>
 			if this is your first time launching this page, this might take a while.
-		</h3>
+		</p>
 	{:then}
 		<Filters/>
 		{#each $list as s (s.uid)}
 			<div animate:flip="{{duration:2000, easing: quintOut, delay: 500}}">
-				<div in:custom_fly="{{duration:3000,x:-300,opacity:0,easing: quintOut, delay: 1000}}">
+				<div in:fly="{{duration:3000,x:-300,opacity:0,easing: quintOut, delay: $flyDelay}}"> 
 					<div out:fly="{{duration:3000,x:300,opacity:0,easing: quintOut}}">
 						<h1><a href={s.song_link} target='_blank'>{s.song_title}</a></h1>
 						<h2>by 
