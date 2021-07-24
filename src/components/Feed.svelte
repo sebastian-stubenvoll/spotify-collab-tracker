@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import InfiniteLoading from 'svelte-infinite-loading';
 	import { readData, updateData } from '../utils/data.js';
-	import { formatDistance } from 'date-fns';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
@@ -10,6 +9,7 @@
 	import { pushURL } from '../../settings.js';
 	import { limit, list, lastTouchedByUpdate, flyDelay } from '../stores.js';
 	import Filters from './Filters.svelte';
+	import Song from './Song.svelte';
 
 
 	//remove auth url params
@@ -29,16 +29,6 @@
 				}
 			});
 	}
-
-	function timeAgo(unix) {
-		const time = formatDistance(new Date(unix), new Date(), { addSuffix : true })
-		return time
-	}
-
-	function checkSeperator(artists, i) {
-		if (artists.length-1 == i) {return ''}
-		else if (artists.length-2 == i) {return ' & '}
-		else {return ', '}}
 
 	onMount(() => {
 		setInterval(() => {
@@ -75,17 +65,8 @@
 			<div animate:flip="{{duration:2000, easing: quintOut, delay: 500}}">
 				<div in:fly="{{duration:3000,x:-300,opacity:0,easing: quintOut, delay: $flyDelay}}"> 
 					<div out:fly="{{duration:3000,x:300,opacity:0,easing: quintOut}}">
-						<h1><a href={s.song_link} target='_blank'>{s.song_title}</a></h1>
-						<h2>by 
-							{#each s.artists as {name, link}, i}
-							<a href={link} target='_blank'>{name}</a>{checkSeperator(s.artists, i)}
-							{/each}
-						</h2>
-						<h3>added to <a href={s.playlist_link} target='_blank'>{s.playlist_name}</a> 
-							by <a href={s.subm_link} target='_blank'><b>{s.subm_name}</b></a> {timeAgo(s.unix)}
-						</h3>
-						<br>
-						<br>
+						<Song {...s} />
+
 					</div>
 				</div>
 			</div>
@@ -100,25 +81,3 @@
 		</InfiniteLoading>
 	{/await}
 </main>
-
-<style>
-
-	h1 {
-		color: indianred;
-		font-size: 2em;
-	}
-
-	h2 {
-		color: dimgrey;	
-		font-size: 1.5em;
-	}
-
-	h3 {
-		color: dimgrey;
-		font-size: 1em;
-	}
-
-	a {
-		color: indianred;
-	}	
-</style>
