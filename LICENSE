@@ -1,0 +1,24 @@
+---------------------------------------------
+
+Bundle of <%= pkg.name %>
+Generated: <%= moment().format('YYYY-MM-DD') %>
+
+---------------------------------------------
+
+Licenses:
+
+---------------------------------------------
+
+<% _.forEach(dependencies, function (dependency) { %>
+  <%= dependency.name %>
+  Version: <%= dependency.version %>
+  Description: <%= dependency.description %>
+  URL: <%= dependency.repository?.url %>
+  Author: <%= dependency.author?.name %>
+
+  License:
+    <%= dependency.licenseText %>
+    
+<% }) %>
+
+---------------------------------------------
