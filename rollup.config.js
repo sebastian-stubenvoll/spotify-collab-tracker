@@ -92,7 +92,7 @@ export default {
 			thirdParty: {
 				includePrivate: true,
 				output: {
-					file: path.join(__dirname, 'dist', 'dependencies.txt'),
+					file: path.join(__dirname, 'public', 'build', 'DEPENDENCIES.txt'),
 					encoding: 'utf-8',
 				},
 			},
