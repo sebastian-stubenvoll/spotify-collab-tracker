@@ -6,6 +6,8 @@ import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import replace from '@rollup/plugin-replace';
 
+import path from 'path';
+import license from 'rollup-plugin-license';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -73,7 +75,28 @@ export default {
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
-		production && terser()
+		production && terser(),
+
+		license({
+			sourcemap: true,
+
+			banner: {
+				commentStyle: 'regular',
+
+				content: {
+					file: path.join(__dirname, 'LICENSE'),
+					encoding: 'utf-8',
+				},
+			},
+
+			thirdParty: {
+				includePrivate: true,
+				output: {
+					file: path.join(__dirname, 'dist', 'dependencies.txt'),
+					encoding: 'utf-8',
+				},
+			},
+		}),
 	],
 	watch: {
 		clearScreen: false
