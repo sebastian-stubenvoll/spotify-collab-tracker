@@ -3,13 +3,14 @@
 	import InfiniteLoading from 'svelte-infinite-loading';
 	import { readData, updateData } from '../utils/data.js';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { customFlyIn, customFlyOut} from '../better-animation';
-	import { customFlip } from '../better-animation';
+	import { flip } from 'svelte/animate';
+	import { fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { pushURL } from '../../settings.js';
 	import { limit, list, lastTouchedByUpdate, flyDelay } from '../stores.js';
 	import Filters from './Filters.svelte';
 	import Song from './Song.svelte';
+	import BackToTop from './BackToTop.svelte';
 
 
 	//remove auth url params
@@ -37,7 +38,7 @@
 				if (result) {
 					readData($limit).
 						then(rows => {
-							flyDelay.set(1000);
+							flyDelay.set(400);
 							list.set(rows);
 							lastTouchedByUpdate.yes();
 						}).
@@ -51,10 +52,6 @@
 	});
 </script>
 
-<svelte:head>
-	<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-</svelte:head>
-
 <main>
 
 	{#await updateData()}
@@ -65,11 +62,11 @@
 		</p>
 	{:then}
 		<Filters/>
-		<div class="flex flex-col">
+		<div class="box">
 		{#each $list as s (s.uid)}
-			<div animate:customFlip="{{duration:2000, easing: quintOut, delay: 500}}">
-				<div in:customFlyIn="{{duration:3000,x:-300,opacity:0,easing: quintOut, delay: $flyDelay}}"> 
-					<div out:customFlyOut="{{duration:1000,x:300,easing: quintOut}}">
+			<div animate:flip="{{duration:2000, easing: quintOut, delay: 150}}">
+				<div in:fly="{{duration:3000,x:-300,opacity:0,easing: quintOut, delay: $flyDelay}}"> 
+					<div out:fly="{{duration:1000,x:300,easing: quintOut}}">
 						<Song {...s} />
 
 					</div>
@@ -86,4 +83,13 @@
 			</span>
 		</InfiniteLoading>
 	{/await}
+
+	<BackToTop />
 </main>
+
+<style>
+	.box {
+		display: flex;
+		flex-direction: column;
+	}
+</style>
