@@ -2,7 +2,7 @@
  * ---------------------------------------------
  *
  * Bundle of spotify-collab-tracker
- * Generated: 2021-08-07
+ * Generated: 2021-12-16
  *
  * ---------------------------------------------
  *
@@ -66,22 +66,30 @@
  * Author: Ujjwal Gupta
  *
  * License:
- * const package = require('./package.json');
- * var today = new Date();
- * var dd = today.getDate();
- * var mm = today.getMonth() + 1; //January is 0!
- * var yyyy = today.getFullYear();
- * if (dd < 10) {
- * dd = '0' + dd;
- * }
- * if (mm < 10) {
- * mm = '0' + mm;
- * }
- * var today = dd + '/' + mm + '/' + yyyy;
+ * The MIT License (MIT)
  *
- * exports.banner = `@license :${package.name} - V${package.version} - ${today}
- * https://github.com/ujjwalguptaofficial/JsStore
- * Copyright (c) ${yyyy} @Ujjwal Gupta; Licensed ${package.license}`;
+ * Copyright (c) Ujjwal Gupta
+ *
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
  * 
  *
  * @zerodevx/svelte-toast
@@ -10041,6 +10049,34 @@ var app = (function () {
     	}
     }
 
+    /**
+     * We are resetting the styles if animation already exists
+     * Be aware that all default styles will be overriden that way
+     */
+    function customFlip(node, fromTo, { duration, easing }) {
+    	if (node.style.animation) node.style = null;
+    	return flip(node, fromTo, {duration, easing });
+    }
+
+    /**
+     * If the element is still animating,
+     * reset everything and start again
+     */
+    function customFlyIn(node, { duration, x, easing }) {
+    	if (node.style.animation) node.style = null;
+    	return fly(node, { duration, x });
+    }
+
+    /**
+     * If the element was already flying out, leave it that way.
+     * Do not add another flying animation, as the new element is going
+     * to 
+     */
+    function customFlyOut(node, { duration, x, easing }) {
+    	if (node.style.animation) return;
+    	return fly(node, { duration, x, easing });
+    }
+
     /*
      * Fuzzy
      * https://github.com/myork/fuzzy
@@ -13584,10 +13620,11 @@ var app = (function () {
     	return block;
     }
 
-    // (62:1) {:then}
+    // (66:1) {:then}
     function create_then_block$2(ctx) {
     	let filters;
     	let t0;
+    	let div;
     	let each_blocks = [];
     	let each_1_lookup = new Map();
     	let t1;
@@ -13623,6 +13660,7 @@ var app = (function () {
     		c: function create() {
     			create_component(filters.$$.fragment);
     			t0 = space();
+    			div = element("div");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
@@ -13630,13 +13668,16 @@ var app = (function () {
 
     			t1 = space();
     			create_component(infiniteloading.$$.fragment);
+    			attr_dev(div, "class", "flex flex-col");
+    			add_location(div, file$6, 67, 2, 1703);
     		},
     		m: function mount(target, anchor) {
     			mount_component(filters, target, anchor);
     			insert_dev(target, t0, anchor);
+    			insert_dev(target, div, anchor);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(target, anchor);
+    				each_blocks[i].m(div, null);
     			}
 
     			insert_dev(target, t1, anchor);
@@ -13650,7 +13691,7 @@ var app = (function () {
     				group_outros();
     				for (let i = 0; i < each_blocks.length; i += 1) each_blocks[i].r();
     				validate_each_keys(ctx, each_value, get_each_context, get_key);
-    				each_blocks = update_keyed_each(each_blocks, dirty, get_key, 1, ctx, each_value, each_1_lookup, t1.parentNode, fix_and_outro_and_destroy_block, create_each_block, t1, get_each_context);
+    				each_blocks = update_keyed_each(each_blocks, dirty, get_key, 1, ctx, each_value, each_1_lookup, div, fix_and_outro_and_destroy_block, create_each_block, null, get_each_context);
     				for (let i = 0; i < each_blocks.length; i += 1) each_blocks[i].a();
     				check_outros();
     			}
@@ -13687,9 +13728,10 @@ var app = (function () {
     		d: function destroy(detaching) {
     			destroy_component(filters, detaching);
     			if (detaching) detach_dev(t0);
+    			if (detaching) detach_dev(div);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].d(detaching);
+    				each_blocks[i].d();
     			}
 
     			if (detaching) detach_dev(t1);
@@ -13701,14 +13743,14 @@ var app = (function () {
     		block,
     		id: create_then_block$2.name,
     		type: "then",
-    		source: "(62:1) {:then}",
+    		source: "(66:1) {:then}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (64:2) {#each $list as s (s.uid)}
+    // (69:2) {#each $list as s (s.uid)}
     function create_each_block(key_1, ctx) {
     	let div2;
     	let div1;
@@ -13716,6 +13758,7 @@ var app = (function () {
     	let song;
     	let div0_outro;
     	let div1_intro;
+    	let t;
     	let rect;
     	let stop_animation = noop;
     	let current;
@@ -13736,9 +13779,10 @@ var app = (function () {
     			div1 = element("div");
     			div0 = element("div");
     			create_component(song.$$.fragment);
-    			add_location(div0, file$6, 66, 5, 1746);
-    			add_location(div1, file$6, 65, 4, 1655);
-    			add_location(div2, file$6, 64, 3, 1582);
+    			t = space();
+    			add_location(div0, file$6, 71, 5, 1941);
+    			add_location(div1, file$6, 70, 4, 1842);
+    			add_location(div2, file$6, 69, 3, 1763);
     			this.first = div2;
     		},
     		m: function mount(target, anchor) {
@@ -13746,6 +13790,7 @@ var app = (function () {
     			append_dev(div2, div1);
     			append_dev(div1, div0);
     			mount_component(song, div0, null);
+    			append_dev(div2, t);
     			current = true;
     		},
     		p: function update(new_ctx, dirty) {
@@ -13767,7 +13812,7 @@ var app = (function () {
     		a: function animate() {
     			stop_animation();
 
-    			stop_animation = create_animation(div2, rect, flip, {
+    			stop_animation = create_animation(div2, rect, customFlip, {
     				duration: 2000,
     				easing: quintOut,
     				delay: 500
@@ -13780,7 +13825,7 @@ var app = (function () {
 
     			if (!div1_intro) {
     				add_render_callback(() => {
-    					div1_intro = create_in_transition(div1, fly, {
+    					div1_intro = create_in_transition(div1, customFlyIn, {
     						duration: 3000,
     						x: -300,
     						opacity: 0,
@@ -13796,14 +13841,7 @@ var app = (function () {
     		},
     		o: function outro(local) {
     			transition_out(song.$$.fragment, local);
-
-    			div0_outro = create_out_transition(div0, fly, {
-    				duration: 3000,
-    				x: 300,
-    				opacity: 0,
-    				easing: quintOut
-    			});
-
+    			div0_outro = create_out_transition(div0, customFlyOut, { duration: 1000, x: 300, easing: quintOut });
     			current = false;
     		},
     		d: function destroy(detaching) {
@@ -13817,14 +13855,14 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(64:2) {#each $list as s (s.uid)}",
+    		source: "(69:2) {#each $list as s (s.uid)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (75:3) 
+    // (81:3) 
     function create_noMore_slot(ctx) {
     	let span;
 
@@ -13833,7 +13871,7 @@ var app = (function () {
     			span = element("span");
     			span.textContent = "that's all folks!";
     			attr_dev(span, "slot", "noMore");
-    			add_location(span, file$6, 74, 3, 1951);
+    			add_location(span, file$6, 80, 3, 2154);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -13847,14 +13885,14 @@ var app = (function () {
     		block,
     		id: create_noMore_slot.name,
     		type: "slot",
-    		source: "(75:3) ",
+    		source: "(81:3) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (78:3) 
+    // (84:3) 
     function create_noResults_slot(ctx) {
     	let span;
 
@@ -13863,7 +13901,7 @@ var app = (function () {
     			span = element("span");
     			span.textContent = "that's all folks!";
     			attr_dev(span, "slot", "noResults");
-    			add_location(span, file$6, 77, 3, 2008);
+    			add_location(span, file$6, 83, 3, 2211);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -13877,14 +13915,14 @@ var app = (function () {
     		block,
     		id: create_noResults_slot.name,
     		type: "slot",
-    		source: "(78:3) ",
+    		source: "(84:3) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (56:22)    <p>fetching your collaborative playlists from spotify.    <br>    <br>    if this is your first time launching this page, this might take a while.   </p>  {:then}
+    // (60:22)    <p>fetching your collaborative playlists from spotify.    <br>    <br>    if this is your first time launching this page, this might take a while.   </p>  {:then}
     function create_pending_block$2(ctx) {
     	let p;
     	let t0;
@@ -13901,9 +13939,9 @@ var app = (function () {
     			t1 = space();
     			br1 = element("br");
     			t2 = text("\n\t\t\tif this is your first time launching this page, this might take a while.");
-    			add_location(br0, file$6, 57, 3, 1432);
-    			add_location(br1, file$6, 58, 3, 1440);
-    			add_location(p, file$6, 56, 2, 1374);
+    			add_location(br0, file$6, 61, 3, 1583);
+    			add_location(br1, file$6, 62, 3, 1591);
+    			add_location(p, file$6, 60, 2, 1525);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -13925,7 +13963,7 @@ var app = (function () {
     		block,
     		id: create_pending_block$2.name,
     		type: "pending",
-    		source: "(56:22)    <p>fetching your collaborative playlists from spotify.    <br>    <br>    if this is your first time launching this page, this might take a while.   </p>  {:then}",
+    		source: "(60:22)    <p>fetching your collaborative playlists from spotify.    <br>    <br>    if this is your first time launching this page, this might take a while.   </p>  {:then}",
     		ctx
     	});
 
@@ -13933,6 +13971,8 @@ var app = (function () {
     }
 
     function create_fragment$6(ctx) {
+    	let link;
+    	let t;
     	let main;
     	let current;
 
@@ -13951,14 +13991,21 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
+    			link = element("link");
+    			t = space();
     			main = element("main");
     			info.block.c();
-    			add_location(main, file$6, 53, 0, 1341);
+    			attr_dev(link, "href", "https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css");
+    			attr_dev(link, "rel", "stylesheet");
+    			add_location(link, file$6, 54, 1, 1390);
+    			add_location(main, file$6, 57, 0, 1492);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
+    			append_dev(document.head, link);
+    			insert_dev(target, t, anchor);
     			insert_dev(target, main, anchor);
     			info.block.m(main, info.anchor = null);
     			info.mount = () => main;
@@ -13987,6 +14034,8 @@ var app = (function () {
     			current = false;
     		},
     		d: function destroy(detaching) {
+    			detach_dev(link);
+    			if (detaching) detach_dev(t);
     			if (detaching) detach_dev(main);
     			info.block.d();
     			info.token = null;
@@ -14074,8 +14123,9 @@ var app = (function () {
     		readData,
     		updateData,
     		toast,
-    		fly,
-    		flip,
+    		customFlyIn,
+    		customFlyOut,
+    		customFlip,
     		quintOut,
     		pushURL,
     		limit,
