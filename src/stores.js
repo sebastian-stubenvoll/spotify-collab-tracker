@@ -39,10 +39,11 @@ function createLastTouchedByUpdate() {
 }
 
 function createFilterCriteria() {
-	const { subscribe, update } = writable({ playlists : {}, users : {} });
+	const { subscribe, update, set } = writable({ playlists : {}, users : {} });
 
 	return {
 		subscribe,
+		set,
 		update_criteria : (u, p) => update(criteria => {
 			const users = [];
 			u.forEach(entry => {

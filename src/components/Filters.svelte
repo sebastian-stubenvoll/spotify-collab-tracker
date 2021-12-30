@@ -23,7 +23,7 @@
 			playlistFilters.add(item);
 		}
 		applyFilter();
-		updateFilterOptions($filterCriteria);
+		filterCriteria.set(updateFilterOptions($filterCriteria));
 	}
 
 	function removeFilter(item) {
@@ -33,7 +33,7 @@
 			playlistFilters.delete(item);
 		}
 		applyFilter();
-		updateFilterOptions($filterCriteria);
+		filterCriteria.set(updateFilterOptions($filterCriteria));
 	}
 
 	function decodeType(type) {
@@ -66,8 +66,7 @@
 <div class='filter-buttons'>
 {#each $userFilters as u}
 	<button on:click={() => {removeFilter(u)}}> {u.name} </button>
-{/each}
-{#each $playlistFilters as p}
+{/each}{#each $playlistFilters as p}
 	<button on:click={() => {removeFilter(p)}}> {p.name} </button>
 {/each}
 </div>
@@ -81,15 +80,18 @@
 }
 
 :global([data-svelte-typeahead]) {
-  margin: 1rem;
+  margin: 0 auto;
+  padding-top: 2em;
+  width: 80%;
   position: relative;
   z-index: 9999;
   background-color: rgba(0,0,0,0);
+  max-width: 50em;
 }
 
 	.filter-buttons {
-		width: 50%;
-		margin: 0 auto;
+		position: relative;
+		padding: 1em;
 	}
 
 	.category-info {
@@ -98,7 +100,7 @@
 		}
 
 	button {
-		padding: 0.4em;
+		margin: 0.3em;
 		background-color: indianred;
 		color: white;
 		border-color: rgba(0,0,0,0);
