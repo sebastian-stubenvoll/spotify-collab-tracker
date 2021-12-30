@@ -2,7 +2,7 @@
  * ---------------------------------------------
  *
  * Bundle of spotify-collab-tracker
- * Generated: 2021-12-16
+ * Generated: 2021-12-30
  *
  * ---------------------------------------------
  *
@@ -9132,10 +9132,11 @@ var app = (function () {
     }
 
     function createFilterCriteria() {
-    	const { subscribe, update } = writable({ playlists : {}, users : {} });
+    	const { subscribe, update, set } = writable({ playlists : {}, users : {} });
 
     	return {
     		subscribe,
+    		set,
     		update_criteria : (u, p) => update(criteria => {
     			const users = [];
     			u.forEach(entry => {
@@ -11549,8 +11550,8 @@ var app = (function () {
     			span = element("span");
     			t1 = text(t1_value);
     			html_tag = new HtmlTag(t0);
-    			attr_dev(span, "class", "category-info svelte-1ere1q4");
-    			add_location(span, file$9, 62, 23, 1242);
+    			attr_dev(span, "class", "category-info svelte-mmit17");
+    			add_location(span, file$9, 62, 23, 1282);
     		},
     		m: function mount(target, anchor) {
     			html_tag.m(raw_value, target, anchor);
@@ -11583,8 +11584,9 @@ var app = (function () {
     // (67:0) {#each $userFilters as u}
     function create_each_block_1(ctx) {
     	let button;
-    	let t_value = /*u*/ ctx[15].name + "";
-    	let t;
+    	let t0_value = /*u*/ ctx[15].name + "";
+    	let t0;
+    	let t1;
     	let mounted;
     	let dispose;
 
@@ -11595,13 +11597,15 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			button = element("button");
-    			t = text(t_value);
-    			attr_dev(button, "class", "svelte-1ere1q4");
-    			add_location(button, file$9, 67, 1, 1382);
+    			t0 = text(t0_value);
+    			t1 = space();
+    			attr_dev(button, "class", "svelte-mmit17");
+    			add_location(button, file$9, 67, 1, 1422);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
-    			append_dev(button, t);
+    			append_dev(button, t0);
+    			insert_dev(target, t1, anchor);
 
     			if (!mounted) {
     				dispose = listen_dev(button, "click", click_handler, false, false, false);
@@ -11610,10 +11614,11 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
-    			if (dirty & /*$userFilters*/ 1 && t_value !== (t_value = /*u*/ ctx[15].name + "")) set_data_dev(t, t_value);
+    			if (dirty & /*$userFilters*/ 1 && t0_value !== (t0_value = /*u*/ ctx[15].name + "")) set_data_dev(t0, t0_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(button);
+    			if (detaching) detach_dev(t1);
     			mounted = false;
     			dispose();
     		}
@@ -11630,7 +11635,7 @@ var app = (function () {
     	return block;
     }
 
-    // (70:0) {#each $playlistFilters as p}
+    // (69:7) {#each $playlistFilters as p}
     function create_each_block$2(ctx) {
     	let button;
     	let t0_value = /*p*/ ctx[12].name + "";
@@ -11648,8 +11653,8 @@ var app = (function () {
     			button = element("button");
     			t0 = text(t0_value);
     			t1 = space();
-    			attr_dev(button, "class", "svelte-1ere1q4");
-    			add_location(button, file$9, 70, 1, 1484);
+    			attr_dev(button, "class", "svelte-mmit17");
+    			add_location(button, file$9, 69, 1, 1523);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
@@ -11676,7 +11681,7 @@ var app = (function () {
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(70:0) {#each $playlistFilters as p}",
+    		source: "(69:7) {#each $playlistFilters as p}",
     		ctx
     	});
 
@@ -11685,9 +11690,9 @@ var app = (function () {
 
     function create_fragment$9(ctx) {
     	let typeahead;
-    	let t0;
+    	let t;
     	let div;
-    	let t1;
+    	let each0_anchor;
     	let current;
 
     	typeahead = new Typeahead({
@@ -11731,35 +11736,35 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			create_component(typeahead.$$.fragment);
-    			t0 = space();
+    			t = space();
     			div = element("div");
 
     			for (let i = 0; i < each_blocks_1.length; i += 1) {
     				each_blocks_1[i].c();
     			}
 
-    			t1 = space();
+    			each0_anchor = empty();
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			attr_dev(div, "class", "filter-buttons svelte-1ere1q4");
-    			add_location(div, file$9, 65, 0, 1326);
+    			attr_dev(div, "class", "filter-buttons svelte-mmit17");
+    			add_location(div, file$9, 65, 0, 1366);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
     			mount_component(typeahead, target, anchor);
-    			insert_dev(target, t0, anchor);
+    			insert_dev(target, t, anchor);
     			insert_dev(target, div, anchor);
 
     			for (let i = 0; i < each_blocks_1.length; i += 1) {
     				each_blocks_1[i].m(div, null);
     			}
 
-    			append_dev(div, t1);
+    			append_dev(div, each0_anchor);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(div, null);
@@ -11789,7 +11794,7 @@ var app = (function () {
     					} else {
     						each_blocks_1[i] = create_each_block_1(child_ctx);
     						each_blocks_1[i].c();
-    						each_blocks_1[i].m(div, t1);
+    						each_blocks_1[i].m(div, each0_anchor);
     					}
     				}
 
@@ -11835,7 +11840,7 @@ var app = (function () {
     		},
     		d: function destroy(detaching) {
     			destroy_component(typeahead, detaching);
-    			if (detaching) detach_dev(t0);
+    			if (detaching) detach_dev(t);
     			if (detaching) detach_dev(div);
     			destroy_each(each_blocks_1, detaching);
     			destroy_each(each_blocks, detaching);
@@ -11896,7 +11901,7 @@ var app = (function () {
     		}
 
     		applyFilter();
-    		updateFilterOptions($filterCriteria);
+    		filterCriteria.set(updateFilterOptions($filterCriteria));
     	}
 
     	function removeFilter(item) {
@@ -11907,7 +11912,7 @@ var app = (function () {
     		}
 
     		applyFilter();
-    		updateFilterOptions($filterCriteria);
+    		filterCriteria.set(updateFilterOptions($filterCriteria));
     	}
 
     	const writable_props = [];
