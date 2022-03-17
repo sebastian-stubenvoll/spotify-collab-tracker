@@ -38,65 +38,71 @@ function createLastTouchedByUpdate() {
 	}
 }
 
-function createFilterCriteria() {
-	const { subscribe, update, set } = writable({ playlists : {}, users : {} });
 
+function createFilters() {
+	const { subscribe, set, update } = writable({
+		criteria: {
+			users: [],
+			playlists: []
+		},
+		active: {
+			users: [],
+			playlists: []
+		},
+	})
+
+	// Filter methods take two arguments, the filter type and the element
 	return {
 		subscribe,
-		set,
-		update_criteria : (u, p) => update(criteria => {
+		update_criteria : (u, p) => update(filters => {
 			const users = [];
-			u.forEach(entry => {
-				users.push({ id : entry.subm_id, name : entry.subm_name, type : 0 });
-			});
 			const playlists = [];
-			p.forEach(entry => {
-				playlists.push({ id : entry.playlist_id, name : entry.playlist_name, type : 1 });
+			u.forEach(entry => {
+				users.push({
+					id : entry.subm_id,
+					name : entry.subm_name,
+				})
 			});
-			return [...users, ...playlists]
+			p.forEach(entry => {
+				playlists.push({
+					id : entry.playlist_id,
+					name : entry.playlist_name,
+				})
+			});
+			filters.criteria.users = users;
+			filters.criteria.playlists = playlists;
+			return filters
+		}),
+		add : (newf, type) => update(filters => {
+			if (!filters.active[type].includes(newf)) {
+				filters.active[type] = [ ...filters.active[type], newf ];
+			}
+			return filters
+		}),
+		delete : (newf, type) => update(filters => {
+			if (filters.active[type].includes(newf)) {
+				filters.active[type] = arrayRemove(filters.active[type], newf);
+			}
+			return filters
+		}),
+		toggle : (newf, type) => update(filters => {
+			if (!filters.active[type].includes(newf)) {
+				filters.active[type] = [ ...filters.active[type], newf ];
+			} else {
+				filters.active[type] = arrayRemove(filters.active[type], newf);
+			}
+			return filters
+		}),
+		reset : () => update(filters => {
+			filters.active.users = [];
+			filters.active.playlists = [];
+			return filters
 		})
 	}
 }
 
-function createPlaylistFilters() {
-	const { subscribe, set, update } = writable([]);
-
-	return { 
-		subscribe,
-		add: (pl) => update(li => { 
-			if ( !li.includes(pl) ) { return [...li, pl] } else { return li }
-		}),
-		delete: (pl) => update(li => { if ( li.includes(pl) ) { return arrayRemove(li, pl) } else { return li }
-		}),
-		toggle: (pl) => update(li => {
-			if ( li.includes(pl) ) { return arrayRemove(li, pl) } else { return [...li, pl] }
-		}),
-		reset: () => set([])
-	};
-}
-
-function createUserFilters() {
-	const { subscribe, set, update } = writable([]);
-
-	return { 
-		subscribe,
-		add: (u) => update(li => { 
-			if ( !li.includes(u) ) { return [...li, u] } else { return li }
-		}),
-		delete: (u) => update(li => {
-			if ( li.includes(u) ) { return arrayRemove(li, u) } else { return li }
-		}),
-		toggle: (u) => update(li => {
-			if ( li.includes(u) ) { return arrayRemove(li, u) } else { return [...li, u] }
-		}),
-		reset: () => set([])
-	};
-}
-
-export const limit = createLimit();
-export const list = createList();
-export const lastTouchedByUpdate = createLastTouchedByUpdate();
-export const filterCriteria = createFilterCriteria();
-export const playlistFilters = createPlaylistFilters();
-export const userFilters = createUserFilters();
+export const limit = createLimit(); //DB fetch limit
+export const list = createList(); //DB results
+export const lastTouchedByUpdate = createLastTouchedByUpdate(); //??
+export const filters = createFilters(); //filter management
 export const flyDelay = writable(0);
