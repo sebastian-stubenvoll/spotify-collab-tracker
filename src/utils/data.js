@@ -3,7 +3,7 @@ import { token } from "./spotify_utils";
 import { Connection } from "jsstore";
 import workerInjector from "jsstore/dist/worker_injector";
 import { get } from "svelte/store";
-import { filterCriteria, playlistFilters, userFilters } from "../stores.js";
+import { filters } from "../stores.js";
 
 //function exports
 export async function updateData () {
@@ -176,12 +176,13 @@ async function getSongs (l) {
 	}
 	//add filters
 	let temp = [];
-	get(playlistFilters).forEach(element => {temp.push(element.id)});
+	f = get(filters);
+	f.active.playlists.forEach(element => {temp.push(element.id)});
 	const playlist_re = new RegExp(temp.join('|'));
 	if (playlist_re != '') { query.where.playlist_id = { regex : playlist_re } }
 
 	temp = [];
-	get(userFilters).forEach(element => {temp.push(element.id)});
+	f.active.users.forEach(element => {temp.push(element.id)});
 	const user_re = new RegExp(temp.join('|'));
 	if (user_re != '') { query.where.subm_id = { regex : user_re } }
 
