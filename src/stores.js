@@ -40,7 +40,7 @@ function createLastTouchedByUpdate() {
 
 
 function createFilters() {
-	const { subscribe, set, update } = writable({
+	const { subscribe, update } = writable({
 		criteria: {
 			users: [],
 			playlists: []
@@ -73,24 +73,26 @@ function createFilters() {
 			filters.criteria.playlists = playlists;
 			return filters
 		}),
-		add : (newf, type) => update(filters => {
+		add : (type, newf) => update(filters => {
 			if (!filters.active[type].includes(newf)) {
 				filters.active[type] = [ ...filters.active[type], newf ];
 			}
+			if (filters.criteria[type].includes(newf)) {
+				filters.criteria[type] = arrayRemove(filters.criteria[type], newf);
+			}
 			return filters
 		}),
-		delete : (newf, type) => update(filters => {
+		delete : (type, newf) => update(filters => {
 			if (filters.active[type].includes(newf)) {
 				filters.active[type] = arrayRemove(filters.active[type], newf);
 			}
+			if (!filters.criteria[type].includes(newf)) {
+				filters.criteria[type] = [ ...filters.criteria[type], newf ];
+			}
 			return filters
 		}),
-		toggle : (newf, type) => update(filters => {
-			if (!filters.active[type].includes(newf)) {
-				filters.active[type] = [ ...filters.active[type], newf ];
-			} else {
-				filters.active[type] = arrayRemove(filters.active[type], newf);
-			}
+		toggle : (type, newf) => update(filters => {
+			filters = filters.active[type].includes(newf) ? this.remove(type, newf) : this.add(type, newf);
 			return filters
 		}),
 		reset : () => update(filters => {

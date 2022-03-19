@@ -11,9 +11,8 @@ export async function updateData () {
 	await initDatabase();
 	const playlists = await updatePlaylists();
 	const allSongs = await updateSongs(playlists);
-	const fC = await getFilterCriteria();
-	filterCriteria.update_criteria(fC.users, fC.playlists);
-	updateFilterOptions(get(filterCriteria));
+	const fc = await getFilterCriteria();
+	filters.update_criteria(fc.users, fc.playlists);
 	return allSongs['songs'].length != 0
 }
 
@@ -28,8 +27,8 @@ export function deleteData () {
 }
 
 export function updateFilterOptions (data) {
-		data = data.filter( el => !get(userFilters).includes( el ) );
-		data = data.filter( el => !get(playlistFilters).includes( el ) );
+		data = data.filter( el => !get(filters).criteria.users.includes( el ) );
+		data = data.filter( el => !get(filters).criteria.playlists.includes( el ) );
 		return data
 }
 
@@ -176,7 +175,7 @@ async function getSongs (l) {
 	}
 	//add filters
 	let temp = [];
-	f = get(filters);
+	let f = get(filters);
 	f.active.playlists.forEach(element => {temp.push(element.id)});
 	const playlist_re = new RegExp(temp.join('|'));
 	if (playlist_re != '') { query.where.playlist_id = { regex : playlist_re } }

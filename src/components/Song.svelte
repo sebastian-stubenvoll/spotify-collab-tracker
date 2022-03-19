@@ -6,6 +6,16 @@
 	export let artists;
 	export let playlist_name;
 	export let playlist_link;
+	export let playlist_id;
+	export let uid;
+	export let song_popularity;
+	export let song_duration;
+	export let song_islocal;
+	export let song_id;
+	export let album_name;
+	export let album_link;
+	export let subm_id;
+	export let subm_images;
 	export let subm_link;
 	export let subm_name;
 	export let unix;

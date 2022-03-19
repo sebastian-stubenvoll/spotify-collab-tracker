@@ -1,13 +1,24 @@
 <script>
-	import { readData, updateFilterOptions } from "../utils/data.js";
-	import { filterCriteria, playlistFilters, userFilters, limit, list, lastTouchedByUpdate, flyDelay } from "../stores.js"; 
-	import Typeahead from "svelte-typeahead";
+	import { readData, updateFilterOptions } from '../utils/data.js';
+	import { filters, limit, list, lastTouchedByUpdate, flyDelay } from '../stores.js'; 
+	import Typeahead from 'svelte-typeahead';
 
-	const extract = (item) => item.name;
-	let data = $filterCriteria
+	const extract = (item) => item.data.name;
 
+	let structureFilters = function(criteria) {
+		console.log(criteria);
+		let users = [];
+		let playlists = [];
+		criteria.users.forEach((x, _) => users = [...users, {'type' : 'users', 'data' : x}]);
+		criteria.playlists.forEach((x, _) => playlists = [...playlists, {'type' : 'playlists', 'data' : x}]);
+		console.log([...users, ...playlists]);
+		return [...users, ...playlists]
+	};
+
+	let data = structureFilters($filters.criteria);
 
 	function applyFilter() {
+		//THIS NEEDS TO RESET THE INFINITE HANDLER STATE TO NOT-DONE
 		readData($limit).
 			then(rows => {
 				flyDelay.set(1000);
@@ -17,38 +28,20 @@
 	}
 
 	function addFilter(item) {
-		if (item.type == 0) {
-			userFilters.add(item);
-		} else if (item.type == 1) {
-			playlistFilters.add(item);
-		}
+		filters.add(item.type, item.data);
 		applyFilter();
-		filterCriteria.set(updateFilterOptions($filterCriteria));
 	}
 
-	function removeFilter(item) {
-		if (item.type == 0) {
-			userFilters.delete(item);
-		} else if (item.type == 1) {
-			playlistFilters.delete(item);
-		}
+	function removeFilter(type, item) {
+		filters.delete(type, item);
 		applyFilter();
-		filterCriteria.set(updateFilterOptions($filterCriteria));
 	}
 
 	function decodeType(type) {
-		switch (type) {
-			case 0:
-				return 'in users'
-			case 1:
-				return 'in playlists'
-			}
+		return 'in ' + 	type
 		}
 
 </script>
-
-
-
 
 <Typeahead 
 	{data}
@@ -64,10 +57,11 @@
 </Typeahead>
 
 <div class='filter-buttons'>
-{#each $userFilters as u}
-	<button on:click={() => {removeFilter(u)}}> {u.name} </button>
-{/each}{#each $playlistFilters as p}
-	<button on:click={() => {removeFilter(p)}}> {p.name} </button>
+{#each $filters.active.users as u}
+	<button on:click={() => {removeFilter('users', u)}}> {u.name} </button>
+{/each}
+{#each $filters.active.playlists as p}
+	<button on:click={() => {removeFilter('playlists', p)}}> {p.name} </button>
 {/each}
 </div>
 
