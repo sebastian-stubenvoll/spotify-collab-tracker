@@ -9,10 +9,10 @@ I realize this is **very** basic right now, but more features are coming soon!
 * show songs across all collaborative playlists, ordered chronologically
 * keep scrolling to load older songs
 * minimize amount of request by keeping a copy of the data in browser storage
+* **NEW**: filter system! look for specific users and playlists
 
 ### planned
 
-* filter system; e.g. filter for a specific set of users/specific playlists etc.
 * changes to the popups, e.g. a *go to top* button
 * an activity page; see who/which playlists have been the most active
 * themes!

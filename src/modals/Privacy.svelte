@@ -15,10 +15,10 @@
 	</p>
 how is my data stored?
 <p>
-	all of your data is stored <b>locally</b> inside your browser (indexedDB). this is only done to keep the number of requests as low as possible. you can delete the locally stored information at any point by via your browser or clicking <button on:click={clearData}><b>here</b></button>.
+	all of your data is stored <b>locally</b> inside your browser (indexedDB). this is only done to keep the number of requests as low as possible. you can delete the locally stored information at any point via your browser or by clicking <button on:click={clearData}><b>here</b></button>.
 </p>
-does this page store cookies?
-<p>no. this webapp only store the data that is necessary for functionality. </p>
+what data does this page store exactly?
+<p>this webapp only stores the data that is necessary for functionality. right now this is a database of your collaborative playlists and some information required to log into spotify. in the future this may also include user settings such as themes. all the data is only stored locally (i.e. in your browser) and will never be stored on the server hosting this page (as it is completely static).</p>
 i'm still not sure...
 <p>
 	if you have any remaining concerns, feel free to check out the <a href='https://github.com/sebastian-stubenvoll/spotify-collab-tracker' target='_blank'><b>source code</b></a>.

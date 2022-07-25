@@ -1,26 +1,25 @@
 <script>
-	import { readData, updateFilterOptions } from '../utils/data.js';
+	import { readData } from '../utils/data.js';
 	import { filters, limit, list, lastTouchedByUpdate, flyDelay } from '../stores.js'; 
 	import Typeahead from 'svelte-typeahead';
+
+	export let infiniteId;
 
 	const extract = (item) => item.data.name;
 
 	let structureFilters = function(criteria) {
-		console.log(criteria);
 		let users = [];
 		let playlists = [];
 		criteria.users.forEach((x, _) => users = [...users, {'type' : 'users', 'data' : x}]);
 		criteria.playlists.forEach((x, _) => playlists = [...playlists, {'type' : 'playlists', 'data' : x}]);
-		console.log([...users, ...playlists]);
 		return [...users, ...playlists]
 	};
 
 	let data = structureFilters($filters.criteria);
 
 	function applyFilter() {
-		//THIS NEEDS TO RESET THE INFINITE HANDLER STATE TO NOT-DONE
 		readData($limit).
-			then(rows => {
+		then(rows => {
 				flyDelay.set(1000);
 				list.set(rows);
 				lastTouchedByUpdate.yes();
@@ -34,6 +33,7 @@
 
 	function removeFilter(type, item) {
 		filters.delete(type, item);
+		infiniteId = Symbol();
 		applyFilter();
 	}
 

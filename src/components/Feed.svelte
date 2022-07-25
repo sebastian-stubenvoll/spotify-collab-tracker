@@ -12,6 +12,10 @@
 	import Song from './Song.svelte';
 	import BackToTop from './BackToTop.svelte';
 
+	//Reassigning will trigger a reload of the InfiniteLoading component
+	//This should be done when removing filters as to reset the handler
+	let infiniteId = Symbol();
+
 
 	//remove auth url params
 	history.pushState({}, 'feed', pushURL);
@@ -53,7 +57,6 @@
 </script>
 
 <main>
-
 	{#await updateData()}
 		<p>fetching your collaborative playlists from spotify.
 			<br>
@@ -61,7 +64,7 @@
 			if this is your first time launching this page, this might take a while.
 		</p>
 	{:then}
-		<Filters/>
+		<Filters bind:infiniteId={infiniteId}/>
 		<div class="box">
 		{#each $list as s (s.uid)}
 			<div animate:flip="{{duration:2000, easing: quintOut, delay: 150}}">
@@ -74,7 +77,7 @@
 			</div>
 		{/each}
 		</div>
-		<InfiniteLoading on:infinite={infiniteHandler} spinner='wavedots'>
+		<InfiniteLoading on:infinite={infiniteHandler} identifier={infiniteId} spinner='wavedots'>
 			<span slot="noMore">
 				that's all folks!
 			</span>
