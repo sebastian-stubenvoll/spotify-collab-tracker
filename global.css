@@ -65,3 +65,9 @@ button:not(:disabled):active {
 button:focus {
 	border-color: #666;
 }
+
+
+mark {
+	background-color: rgba(0,0,0,0);
+	color: indianred;
+}
