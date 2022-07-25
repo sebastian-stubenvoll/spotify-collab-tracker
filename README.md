@@ -13,7 +13,7 @@ I realize this is **very** basic right now, but more features are coming soon!
 
 ### planned
 
-* changes to the popups, e.g. a *go to top* button
+* polishing the ui
 * an activity page; see who/which playlists have been the most active
 * themes!
 
