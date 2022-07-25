@@ -3,7 +3,7 @@
 	let hidden = true;
 
 	function goTop() {
-		document.body.scrollIntoView();
+		document.body.scrollIntoView({ behavior : "smooth" });
 	}
 
 	function scrollContainer() {
@@ -22,7 +22,7 @@
 
 <svelte:window on:scroll={onScroll} />
 
-<div class="top-button" on:click={goTop} class:hidden> to da top!</div>
+<div class="top-button" on:click={goTop} class:hidden>↑</div>
 
 
 <style> 
@@ -34,6 +34,8 @@
 		right: 20px;
 		user-select: none;
 		bottom: 20px;
+		padding: 2%;
+		background-color: indianred;
 	}
 	
 	.top-button.hidden {

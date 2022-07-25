@@ -1,4 +1,5 @@
 <script>
+<<<<<<< HEAD
 	import { readData, updateFilterOptions } from "../utils/data.js";
 	import { filterCriteria, playlistFilters, userFilters, limit, list, lastTouchedByUpdate, flyDelay } from "../stores.js"; 
 	import Typeahead from "svelte-typeahead";
@@ -6,10 +7,29 @@
 	const extract = (item) => item.name;
 	let data = $filterCriteria
 
+=======
+	import { readData } from '../utils/data.js';
+	import { filters, limit, list, lastTouchedByUpdate, flyDelay } from '../stores.js'; 
+	import Typeahead from 'svelte-typeahead';
+
+	export let infiniteId;
+
+	const extract = (item) => item.data.name;
+
+	let structureFilters = function(criteria) {
+		let users = [];
+		let playlists = [];
+		criteria.users.forEach((x, _) => users = [...users, {'type' : 'users', 'data' : x}]);
+		criteria.playlists.forEach((x, _) => playlists = [...playlists, {'type' : 'playlists', 'data' : x}]);
+		return [...users, ...playlists]
+	};
+
+	let data = structureFilters($filters.criteria);
+>>>>>>> 74ea0ec (release 2.0 🎉)
 
 	function applyFilter() {
 		readData($limit).
-			then(rows => {
+		then(rows => {
 				flyDelay.set(1000);
 				list.set(rows);
 				lastTouchedByUpdate.yes();
@@ -26,12 +46,18 @@
 		filterCriteria.set(updateFilterOptions($filterCriteria));
 	}
 
+<<<<<<< HEAD
 	function removeFilter(item) {
 		if (item.type == 0) {
 			userFilters.delete(item);
 		} else if (item.type == 1) {
 			playlistFilters.delete(item);
 		}
+=======
+	function removeFilter(type, item) {
+		filters.delete(type, item);
+		infiniteId = Symbol();
+>>>>>>> 74ea0ec (release 2.0 🎉)
 		applyFilter();
 		filterCriteria.set(updateFilterOptions($filterCriteria));
 	}
